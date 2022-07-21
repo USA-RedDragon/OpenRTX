@@ -26,9 +26,9 @@
  
 #include "arm_math.h" 
  
-extern uint16_t armBitRevTable[256]; 
-extern q15_t armRecipTableQ15[64]; 
-extern q31_t armRecipTableQ31[64]; 
+extern const uint16_t armBitRevTable[1024]; 
+extern const q15_t armRecipTableQ15[64]; 
+extern const q31_t armRecipTableQ31[64]; 
 extern const q31_t realCoefAQ31[1024];
 extern const q31_t realCoefBQ31[1024];
 
@@ -102,5 +102,8 @@ extern const uint16_t armBitRevIndexTable_fixed_512[ARMBITREVINDEXTABLE_FIXED__5
 extern const uint16_t armBitRevIndexTable_fixed_1024[ARMBITREVINDEXTABLE_FIXED_1024_TABLE_LENGTH];
 extern const uint16_t armBitRevIndexTable_fixed_2048[ARMBITREVINDEXTABLE_FIXED_2048_TABLE_LENGTH];
 extern const uint16_t armBitRevIndexTable_fixed_4096[ARMBITREVINDEXTABLE_FIXED_4096_TABLE_LENGTH];
+
+/* Tables for Fast Math Sine and Cosine */
+extern const float32_t sinTable_f32[FAST_MATH_TABLE_SIZE + 1];
 
 #endif /*  ARM_COMMON_TABLES_H */ 

@@ -286,6 +286,7 @@ extern "C"
    * @brief Macros required for SINE and COSINE Fast math approximations
    */
 
+#define FAST_MATH_TABLE_SIZE  512
 #define TABLE_SIZE			256
 #define TABLE_SPACING_Q31	0x800000
 #define TABLE_SPACING_Q15	0x80
@@ -297,6 +298,15 @@ extern "C"
   /* -1 to +1 is divided into 360 values so total spacing is (2/360) */
 #define INPUT_SPACING			0xB60B61
 
+#ifndef UNALIGNED_SUPPORT_DISABLE
+    #define ALIGN4
+#else
+  #if defined  (__GNUC__)
+    #define ALIGN4 __attribute__((aligned(4)))
+  #else
+    #define ALIGN4 __align(4)
+  #endif
+#endif   /* #ifndef UNALIGNED_SUPPORT_DISABLE */
 
   /**
    * @brief Error status returned by some functions in the library.

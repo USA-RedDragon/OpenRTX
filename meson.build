@@ -213,7 +213,15 @@ stm32f405_src = ['platform/mcu/STM32F4xx/boot/startup.cpp',
                  'platform/mcu/CMSIS/DSP/arm_cfft_q15.c',
                  'platform/mcu/CMSIS/DSP/arm_cfft_q31.c',
                  'platform/mcu/CMSIS/DSP/arm_fir_init_f32.c',
-                 'platform/mcu/CMSIS/DSP/arm_fir_f32.c']
+                 'platform/mcu/CMSIS/DSP/arm_fir_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_cmplx_mag_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_max_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_lms_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_cos_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_sin_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_cfft_radix8_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_common_tables.c',
+                 'platform/mcu/CMSIS/DSP/arm_bitreversal2.S']
 
 stm32f405_inc = ['platform/mcu/CMSIS/Include',
                  'platform/mcu/CMSIS/Device/ST/STM32F4xx/Include',
