@@ -64,6 +64,7 @@ openrtx_inc = ['openrtx/include',
                'platform/drivers/ADC',
                'platform/drivers/NVM',
                'platform/drivers/GPS',
+               'platform/drivers/LED',
                'platform/drivers/USB',
                'platform/drivers/tones',
                'platform/drivers/baseband',
@@ -156,7 +157,8 @@ mdx_src = ['openrtx/src/core/xmodem.c',
            'platform/drivers/backlight/backlight_MDx.c',
            'platform/drivers/tones/toneGenerator_MDx.cpp',
            'platform/drivers/USB/usb_MDx.cpp',
-           'platform/drivers/USB/usb_descriptors.c']
+           'platform/drivers/USB/usb_descriptors.c',
+           'platform/drivers/LED/led.c']
 
 ##
 ## GDx family: Radioddity GD-77 and Baofeng DM-1801
