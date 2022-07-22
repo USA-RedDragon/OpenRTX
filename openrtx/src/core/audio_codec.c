@@ -242,6 +242,7 @@ static void *encodeFunc(void *arg)
             uint32_t max_index;
 
             float32_t audioBuf2[audio.len];
+            float32_t audioBuf3[audio.len];
             for(size_t i = 0; i < audio.len; i++) audioBuf2[i] = (float32_t) audio.data[i];
             // arm_q15_to_float(audio.data, audioBuf2, audio.len);
 
@@ -249,20 +250,20 @@ static void *encodeFunc(void *arg)
 
             //for(size_t i = 0; i < audio.len; i++) printf("Float %d = %f\n", i, audioBuf2[i]);
 
-            alt_noise_blanking(audioBuf2, audio.len);
+            //alt_noise_blanking(audioBuf2, audio.len);
 
-            //processing_noise_reduction(audioBuf2, audioBuf2);
+            //processing_noise_reduction(audioBuf2, audioBuf3);
 
             for(size_t i = 0; i < audio.len; i++) audio.data[i] = (audio_sample_t) audioBuf2[i];
             //for(size_t i = 0; i < audio.len; i++) printf("int %d = %f\n", i, audio.data[i]);
 
             // Noise gate
-            // for(size_t i = 0; i < audio.len; i++) {
-            //     audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
-            // }
+            for(size_t i = 0; i < audio.len; i++) {
+                audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
+            }
 
             // bandpass filter over audio.data
-            //dsp_lowPassFilter(audio.data, audio.len);
+            dsp_lowPassFilter(audio.data, audio.len);
 
             // Post-amplification stage
             for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPost;
