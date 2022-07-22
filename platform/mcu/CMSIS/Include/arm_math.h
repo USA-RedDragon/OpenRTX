@@ -2770,10 +2770,10 @@ extern "C"
    */
 
   void arm_dot_prod_q15(
-			 q15_t * pSrcA,
-			 q15_t * pSrcB,
-			uint32_t blockSize,
-			q63_t * result);
+  const q15_t * pSrcA,
+  const q15_t * pSrcB,
+        uint32_t blockSize,
+        q63_t * result);
 
   /**
    * @brief Dot product of Q31 vectors.
@@ -6249,9 +6249,9 @@ extern "C"
    */
 
   void arm_var_q15(
-		    q15_t * pSrc,
-		   uint32_t blockSize,
-		   q31_t * pResult);
+    q15_t * pSrc,
+    uint32_t blockSize,
+    q15_t * pResult);
 
   /**
    * @brief  Root Mean Square of the elements of a floating-point vector.

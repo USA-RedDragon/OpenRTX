@@ -21,6 +21,8 @@
 #include <interfaces/audio_stream.h>
 #include <audio_codec.h>
 #include <noise_gate.h>
+#include <arm_math.h>
+#include <noise_blanker.h>
 #include <pthread.h>
 #include <codec2.h>
 #include <stdlib.h>
@@ -233,17 +235,34 @@ static void *encodeFunc(void *arg)
             // Pre-amplification stage
             for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPre;
 
-
             // DC removal
             dsp_dcRemoval(&dcrState, audio.data, audio.len);
 
+            q15_t max_value;
+            uint32_t max_index;
+
+            float32_t audioBuf2[audio.len];
+            for(size_t i = 0; i < audio.len; i++) audioBuf2[i] = (float32_t) audio.data[i];
+            // arm_q15_to_float(audio.data, audioBuf2, audio.len);
+
+            //for(size_t i = 0; i < audio.len; i++) printf("int %d = %f\n", i, audio.data[i]);
+
+            //for(size_t i = 0; i < audio.len; i++) printf("Float %d = %f\n", i, audioBuf2[i]);
+
+            alt_noise_blanking(audioBuf2, audio.len);
+
+            //processing_noise_reduction(audioBuf2, audioBuf2);
+
+            for(size_t i = 0; i < audio.len; i++) audio.data[i] = (audio_sample_t) audioBuf2[i];
+            //for(size_t i = 0; i < audio.len; i++) printf("int %d = %f\n", i, audio.data[i]);
+
             // Noise gate
-            for(size_t i = 0; i < audio.len; i++) {
-                audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
-            }
+            // for(size_t i = 0; i < audio.len; i++) {
+            //     audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
+            // }
 
             // bandpass filter over audio.data
-            dsp_lowPassFilter(audio.data, audio.len);
+            //dsp_lowPassFilter(audio.data, audio.len);
 
             // Post-amplification stage
             for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPost;
