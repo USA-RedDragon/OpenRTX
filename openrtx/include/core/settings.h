@@ -46,6 +46,10 @@ typedef enum
 }
 display_timer_t;
 
+
+#define MAX_MIGRATION_VERSION 1 // this should be bumped if any new setting is added to settings_t
+// and a migration should be made in state.c in the state_migrate() function
+
 typedef struct
 {
     uint8_t brightness;           // Display brightness
@@ -57,7 +61,8 @@ typedef struct
     char    callsign[10];         // Plaintext callsign, for future use
     uint8_t display_timer : 4,    // Standby timer
             not_in_use    : 4;
-    color_t color_bg;
+    color_t color_bg;             // Background color, added in migration version 1
+    uint8_t migration_version;    // Used to keep track of new settings to ensure good defaults
 }
 __attribute__((packed)) settings_t;
 
@@ -77,7 +82,8 @@ static const settings_t default_settings =
     "",               // Empty callsign
     TIMER_30S,        // 30 seconds
     0,                 // not in use
-    {0, 0, 0, 255}
+    {0, 0, 0, 255},   // Background color
+    0,                // Migration version
 };
 
 #endif /* SETTINGS_H */
