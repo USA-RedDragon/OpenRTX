@@ -61,6 +61,7 @@ enum uiScreen
     SETTINGS_GPS,
     SETTINGS_M17,
     SETTINGS_COLOR,
+    SETTINGS_LED,
     SETTINGS_RESET2DEFAULTS,
     LOW_BAT
 };
@@ -98,6 +99,7 @@ enum settingsItems
 #endif
     ,S_M17
     ,S_COLOR
+    ,S_LED
     ,S_RESET2DEFAULTS
 };
 
@@ -124,6 +126,11 @@ enum settingsGPSItems
     G_TIMEZONE
 };
 #endif
+
+enum settingsLEDItems
+{
+    L_ENABLED = 0,
+};
 
 /**
  * Struct containing a set of positions and sizes that get
@@ -199,6 +206,7 @@ extern const char *menu_items[];
 extern const char *settings_items[];
 extern const char *display_items[];
 extern const char *settings_gps_items[];
+extern const char *settings_led_items[];
 extern const char *backup_restore_items[];
 extern const char *info_items[];
 extern const char *authors[];
@@ -206,6 +214,7 @@ extern const uint8_t menu_num;
 extern const uint8_t settings_num;
 extern const uint8_t display_num;
 extern const uint8_t settings_gps_num;
+extern const uint8_t settings_led_num;
 extern const uint8_t backup_restore_num;
 extern const uint8_t info_num;
 extern const uint8_t author_num;
