@@ -47,7 +47,7 @@ typedef enum
 display_timer_t;
 
 
-#define MAX_MIGRATION_VERSION 1 // this should be bumped if any new setting is added to settings_t
+#define MAX_MIGRATION_VERSION 2 // this should be bumped if any new setting is added to settings_t
 // and a migration should be made in state.c in the state_migrate() function
 
 typedef struct
@@ -63,6 +63,7 @@ typedef struct
             not_in_use    : 4;
     color_t color_bg;             // Background color, added in migration version 1
     uint8_t migration_version;    // Used to keep track of new settings to ensure good defaults
+    bool    standby_led;          // Enable/disable the standby LED
 }
 __attribute__((packed)) settings_t;
 
@@ -84,6 +85,7 @@ static const settings_t default_settings =
     0,                 // not in use
     {0, 0, 0, 255},   // Background color
     0,                // Migration version
+    false,            // Standby LED
 };
 
 #endif /* SETTINGS_H */

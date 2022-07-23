@@ -36,13 +36,14 @@ void state_migrate() {
         state.settings.migration_version > MAX_MIGRATION_VERSION)
     {
         // Migration from 0>1, add color_bg
-        state.settings.color_bg = (color_t) {0, 0, 0, 255};
+        state.settings.color_bg = default_settings.color_bg;
         state.settings.migration_version = 1;
     }
     if (state.settings.migration_version == 1)
     {
-        //example migration from 1>2, add color_text
-        //state.settings.migration_version = 2;
+        // Migration from 1>2, add standby_led
+        state.settings.standby_led = default_settings.standby_led;
+        state.settings.migration_version = 2;
     }
 }
 
