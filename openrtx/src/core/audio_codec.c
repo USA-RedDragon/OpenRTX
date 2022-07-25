@@ -232,6 +232,7 @@ static void *encodeFunc(void *arg)
     codec2 = codec2_create(CODEC2_MODE_3200);
     noise_gate_t noise_gate;
     noise_gate_init(&noise_gate, 2.0f, 80.0f, 16.0f, 80.0f, 8000.0f);
+    dsp_fir_init();
 
     while(running)
     {
@@ -249,10 +250,10 @@ static void *encodeFunc(void *arg)
 
             float32_t audioBufFloat[audio.len];
             for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] = (float32_t) audio.data[i];
-            //dsp_lowPassFilter(audioBufFloat, audio.len);
-            float32_t meanVal;
-            arm_mean_f32(audioBufFloat, audio.len, &meanVal);
-            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] -= meanVal;
+            dsp_lowPassFilter(audioBufFloat, audio.len);
+            // float32_t meanVal;
+            // arm_mean_f32(audioBufFloat, audio.len, &meanVal);
+            // for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] -= meanVal;
 
             // Normalize audio (no need for micGainPre?)
             float32_t maxValue;
@@ -260,7 +261,7 @@ static void *encodeFunc(void *arg)
             arm_max_f32(audioBufFloat, audio.len, &maxValue, &maxValIndex);
             
             float32_t nrBuf[256];
-            processing_noise_reduction(audioBufFloat, nrBuf);
+            //processing_noise_reduction(audioBufFloat, nrBuf);
 
             //32767/2048~=16
             //32767/128~=256
@@ -268,7 +269,7 @@ static void *encodeFunc(void *arg)
             // or about 24575 and hope the peak isn't too high.
             // maxValue * x = 24575
             // x = 24575/maxValue
-            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] = nrBuf[i]*(8192/maxValue);
+            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] *= (8192/maxValue);
 
             //for(size_t i = 0; i < audio.len; i++) audio.data[i] = audioBufFloat[i];
             // Noise gate
@@ -289,7 +290,7 @@ static void *encodeFunc(void *arg)
 
             //for(size_t i = 0; i < audio.len; i++) audio.data[i] = (audio_sample_t) audioBuf2[i];
 
-            for(size_t i = 0; i < audio.len; i++) audio.data[i] = nrBuf[i];
+            for(size_t i = 0; i < audio.len; i++) audio.data[i] = audioBufFloat[i];
 
             // Post-amplification stage
             for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPost;

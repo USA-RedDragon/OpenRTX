@@ -94,7 +94,7 @@ void dsp_invertPhase(audio_sample_t *buffer, uint16_t length);
  * @param length: the length of the input buffer.
  */
 void dsp_lowPassFilter(float32_t *buffer, uint16_t length);
-
+void dsp_fir_init();
 #ifdef __cplusplus
 }
 #endif // __cplusplus

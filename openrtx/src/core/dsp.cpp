@@ -353,16 +353,17 @@ const float32_t firCoeffs32[NUM_TAPS] = {
 };
 
 // float32_t  snr;
+arm_fir_instance_f32 S;
+
+/* Call FIR init function to initialize the instance structure. */
+void dsp_fir_init() {
+    arm_fir_init_f32(&S, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], BLOCK_SIZE);
+}
 
 void dsp_lowPassFilter(float32_t *filterbuf, uint16_t length)
 {
     uint32_t i;
-    arm_fir_instance_f32 S;
-    arm_status status;
     uint32_t numBlocks = length/BLOCK_SIZE;
-
-    /* Call FIR init function to initialize the instance structure. */
-    arm_fir_init_f32(&S, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], BLOCK_SIZE);
 
     /* ----------------------------------------------------------------------
     ** Call the FIR process function for every BLOCK_SIZE samples
