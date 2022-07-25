@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <arm_math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,7 +93,7 @@ void dsp_invertPhase(audio_sample_t *buffer, uint16_t length);
  * @param buffer: the buffer to be used as both source and destination.
  * @param length: the length of the input buffer.
  */
-void dsp_lowPassFilter(audio_sample_t *buffer, uint16_t length);
+void dsp_lowPassFilter(float32_t *buffer, uint16_t length);
 
 #ifdef __cplusplus
 }

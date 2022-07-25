@@ -21,22 +21,10 @@
 #define BLOCK_SIZE		         256
 #define FFT_SIZE                 256
 
-uint8_t iCmdDnr = 0;
-uint8_t iCmdScp = 0;
-uint8_t iCmdFnc = 0;
-
-float32_t maxValue;				            /* Max FFT value is stored here */
-uint32_t maxIndex;				            /* Index in Output array where max value is */
-
-static int semaphorePlot = 0;
+uint8_t iCmdDnr = 1;
 
 arm_lms_instance_f32  	Sl_LMS;
 
-#define CW_FFT_MIN_BIN           6
-#define CW_FFT_MAX_BIN           16
-#define CW_THRESHOLD             500
-
-float32_t FFTBufferMagPlot[BLOCK_SIZE];
 float32_t errOutput[BLOCK_SIZE];
 
 /********************************************************************

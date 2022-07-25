@@ -41,6 +41,6 @@ void create_threads();
 /**
  * Stack size for baseband control task, in bytes.
  */
-#define RTX_TASK_STKSIZE 512
+#define RTX_TASK_STKSIZE 2048
 
 #endif /* THREADS_H */

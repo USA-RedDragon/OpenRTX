@@ -46,12 +46,21 @@ static uint8_t          writePos;
 static uint8_t          numElements;
 static uint64_t         dataBuffer[BUF_SIZE];
 
+// Max theoretical total gain is 16 before clipping can occur
+// because data container is 12 bit ADC around 0
+// and 4096 values around 0 is +-2048
+// and (16-bit signed maximum) 32767 / 2048 ~= 16 
+// This math assumes the microphone can reach the whole
+// range of ADC values. If not, the data should be normalized
+// before filtering so that we may use the same filtering methods
+// on different hardware. 
+
 #ifdef PLATFORM_MOD17
 static const uint8_t micGainPre  = 4;
 static const uint8_t micGainPost = 3;
 #elif defined(PLATFORM_MD3x0)
-static const uint8_t micGainPre  = 10;
-static const uint8_t micGainPost = 14;
+static const uint8_t micGainPre  = 16;
+static const uint8_t micGainPost = 1;
 #else
 static const uint8_t micGainPre  = 8;
 static const uint8_t micGainPost = 4;
@@ -222,7 +231,7 @@ static void *encodeFunc(void *arg)
 
     codec2 = codec2_create(CODEC2_MODE_3200);
     noise_gate_t noise_gate;
-    noise_gate_init(&noise_gate, 1.0f, 80.0f, 8.0f, 80.0f, 8000.0f);
+    noise_gate_init(&noise_gate, 2.0f, 80.0f, 16.0f, 80.0f, 8000.0f);
 
     while(running)
     {
@@ -232,38 +241,55 @@ static void *encodeFunc(void *arg)
         {
             #ifndef PLATFORM_LINUX
 
-            // Pre-amplification stage
-            for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPre;
+            // Remove DC bias
 
             // DC removal
-            dsp_dcRemoval(&dcrState, audio.data, audio.len);
+            // Interferes with FIR low pass filter
+            //dsp_dcRemoval(&dcrState, audio.data, audio.len);
 
-            q15_t max_value;
-            uint32_t max_index;
+            float32_t audioBufFloat[audio.len];
+            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] = (float32_t) audio.data[i];
+            //dsp_lowPassFilter(audioBufFloat, audio.len);
+            float32_t meanVal;
+            arm_mean_f32(audioBufFloat, audio.len, &meanVal);
+            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] -= meanVal;
 
-            float32_t audioBuf2[audio.len];
-            float32_t audioBuf3[audio.len];
-            for(size_t i = 0; i < audio.len; i++) audioBuf2[i] = (float32_t) audio.data[i];
-            // arm_q15_to_float(audio.data, audioBuf2, audio.len);
+            // Normalize audio (no need for micGainPre?)
+            float32_t maxValue;
+            uint32_t maxValIndex;
+            arm_max_f32(audioBufFloat, audio.len, &maxValue, &maxValIndex);
+            
+            float32_t nrBuf[256];
+            processing_noise_reduction(audioBufFloat, nrBuf);
 
-            //for(size_t i = 0; i < audio.len; i++) printf("int %d = %f\n", i, audio.data[i]);
+            //32767/2048~=16
+            //32767/128~=256
+            // For now we'll just naively push the maximum sample to 1/4 of 16 bit max
+            // or about 24575 and hope the peak isn't too high.
+            // maxValue * x = 24575
+            // x = 24575/maxValue
+            for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] = nrBuf[i]*(8192/maxValue);
 
-            //for(size_t i = 0; i < audio.len; i++) printf("Float %d = %f\n", i, audioBuf2[i]);
-
-            //alt_noise_blanking(audioBuf2, audio.len);
-
-            //processing_noise_reduction(audioBuf2, audioBuf3);
-
-            for(size_t i = 0; i < audio.len; i++) audio.data[i] = (audio_sample_t) audioBuf2[i];
-            //for(size_t i = 0; i < audio.len; i++) printf("int %d = %f\n", i, audio.data[i]);
-
+            //for(size_t i = 0; i < audio.len; i++) audio.data[i] = audioBufFloat[i];
             // Noise gate
             for(size_t i = 0; i < audio.len; i++) {
-                audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
+                //audio.data[i] = noise_gate_update(&noise_gate, audio.data[i]);
             }
+            //for(size_t i = 0; i < audio.len; i++) audioBufFloat[i] = (float32_t) audio.data[i];
 
-            // bandpass filter over audio.data
-            dsp_lowPassFilter(audio.data, audio.len);
+            //for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPre;
+
+            // lowpass + dc removal above causes an odd audio artifact.
+
+            // float32_t audioBuf3[256];
+            // for(size_t i = 0; i < audio.len; i++) audioBuf2[i] = (float32_t) audio.data[i];
+
+            //alt_noise_blanking(audioBufFloat, audio.len);
+            
+
+            //for(size_t i = 0; i < audio.len; i++) audio.data[i] = (audio_sample_t) audioBuf2[i];
+
+            for(size_t i = 0; i < audio.len; i++) audio.data[i] = nrBuf[i];
 
             // Post-amplification stage
             for(size_t i = 0; i < audio.len; i++) audio.data[i] *= micGainPost;
@@ -333,7 +359,7 @@ static void *decodeFunc(void *arg)
 
             #ifdef PLATFORM_MD3x0
             // Bump up volume a little bit, as on MD3x0 is quite low
-            for(size_t i = 0; i < 160; i++) audioBuf[i] *= 4;
+            for(size_t i = 0; i < 160; i++) audioBuf[i] *= 1;
             #endif
 
         }

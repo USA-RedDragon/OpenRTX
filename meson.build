@@ -9,7 +9,7 @@ project('OpenRTX', ['c', 'cpp'],
 ## Optional defines, common to all souces (e.g. to enable debugging)
 ##
 
-def = {}
+def = {'ENABLE_STDIO': ''}
 
 ##
 ## ----------------- Platform-independent source files -------------------------
@@ -244,7 +244,8 @@ stm32f405_src = ['platform/mcu/STM32F4xx/boot/startup.cpp',
                  'platform/mcu/CMSIS/DSP/arm_var_f32.c',
                  'platform/mcu/CMSIS/DSP/arm_var_q15.c',
                  'platform/mcu/CMSIS/DSP/arm_max_q15.c',
-                 'platform/mcu/CMSIS/DSP/arm_fir_decimate_f32.c'
+                 'platform/mcu/CMSIS/DSP/arm_fir_decimate_f32.c',
+                 'platform/mcu/CMSIS/DSP/arm_mean_f32.c',
                  ]
 
 stm32f405_inc = ['platform/mcu/CMSIS/Include',
@@ -337,7 +338,7 @@ md3x0_src = src + mdx_src + stm32f405_src + ['platform/drivers/NVM/nvmem_MD3x0.c
                                              'platform/targets/MD-3x0/platform.c']
 
 md3x0_inc = inc + stm32f405_inc + ['platform/targets/MD-3x0']
-md3x0_def = def + stm32f405_def + {'PLATFORM_MD3x0': '', 'timegm': 'mktime', 'ARM_MATH_CM4': ''}
+md3x0_def = def + stm32f405_def + {'PLATFORM_MD3x0': '', 'timegm': 'mktime', 'ARM_MATH_CM4': '', '__FPU_PRESENT': ''}
 
 ##
 ## TYT MD-UV380

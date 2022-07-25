@@ -9,9 +9,9 @@
 
 #define FFT_LENGTH 512
 #define NB_FFT_SIZE (160)
-float32_t NB_thresh = 40960;
-int8_t NB_taps = 10;
-int8_t NB_impulse_samples = 7;
+float32_t NB_thresh = 4;
+int8_t NB_taps = 127;
+int8_t NB_impulse_samples = 80;
 
 //alt noise blanking is trying to localize some impulse noise within the samples and after that
 //trying to replace corrupted samples by linear predicted samples.
